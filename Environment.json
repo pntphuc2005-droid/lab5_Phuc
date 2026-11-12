@@ -1,0 +1,13 @@
+{
+  "id": "87f07deb-1c37-412a-8677-ad927f07f8df",
+  "name": "2474802010047_MaiVanBinh_GoRest_Env",
+  "values": [
+    {
+      "key": "token",
+      "value": "YOUR_TOKEN_HERE",
+      "type": "secret",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
