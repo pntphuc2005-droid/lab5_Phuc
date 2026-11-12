@@ -1,0 +1,36 @@
+name: GoRest Production Monitor
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check GET /users (status 200 and response time under 800ms)
+        run: |
+          URL="https://gorest.co.in/public/v2/users"
+
+          # Gọi khởi động 1 lần để loại bỏ thời gian bắt tay kết nối lần đầu
+          curl -s -o /dev/null "$URL"
+
+          RESULT=$(curl -s -o /dev/null -w "%{http_code} %{time_total}" "$URL")
+          CODE=$(echo "$RESULT" | cut -d' ' -f1)
+          TIME_MS=$(echo "$RESULT" | awk '{printf "%d", $2*1000}')
+
+          echo "Status code: $CODE"
+          echo "Response time: ${TIME_MS} ms"
+
+          if [ "$CODE" != "200" ]; then
+            echo "FAIL: status code is not 200"
+            exit 1
+          fi
+
+          if [ "$TIME_MS" -ge 800 ]; then
+            echo "FAIL: response time is not under 800 ms"
+            exit 1
+          fi
+
+          echo "PASS: API is available and fast enough"
